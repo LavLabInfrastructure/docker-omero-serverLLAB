@@ -28,9 +28,9 @@ RUN /opt/omero/server/venv3/bin/python -m pip install \
     omero-cli-render \
     omero-metadata
 #importer
-USER importer
 ADD 89-initImporter.sh /startup/
-
 #installation account
 USER omero-server
+RUN id omero-server
+#entry
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
