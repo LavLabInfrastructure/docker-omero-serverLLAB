@@ -17,7 +17,7 @@ RUN curl -L -o /usr/local/bin/dumb-init \
     chmod +x /usr/local/bin/dumb-init
 #add server scripts
 ADD entrypoint.sh /usr/local/bin/
-ADD 50-config.py 60-database.sh 99-run.sh /startup/
+ADD 50-config.py 60-database.sh 89-initImporter.sh 99-run.sh /startup/
 #install server
 USER omero-server
 RUN cd /opt/omero/server/ && \
@@ -27,8 +27,6 @@ USER root
 RUN /opt/omero/server/venv3/bin/python -m pip install \
     omero-cli-render \
     omero-metadata
-#importer
-ADD 89-initImporter.sh /startup/
 #installation account
 USER omero-server
 RUN id omero-server
