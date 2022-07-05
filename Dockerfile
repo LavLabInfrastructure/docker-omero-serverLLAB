@@ -1,16 +1,26 @@
-FROM centos:centos7
-#install ansible
+FROM centos:centos7.9.2009@sha256:dead07b4d8ed7e29e98de0f4504d87e8880d4347859d839686a31da35a3b532f
+LABEL maintainer="ome-devel@lists.openmicroscopy.org.uk"
+LABEL org.opencontainers.image.created="unknown"
+LABEL org.opencontainers.image.revision="unknown"
+LABEL org.opencontainers.image.source="https://github.com/openmicroscopy/omero-server-docker"
+
+RUN mkdir /opt/setup
+WORKDIR /opt/setup
 ADD playbook.yml requirements.yml /opt/setup/
 RUN yum -y install epel-release \
     && yum -y install ansible sudo ca-certificates \
-    && ansible-galaxy install -p /opt/setup/roles -r /opt/setup/requirements.yml
-#install omero/omego
-ARG OMERO_VERSION=5.6.4
+    && ansible-galaxy install -p /opt/setup/roles -r requirements.yml \
+    && yum -y clean all \
+    && rm -fr /var/cache
+#install omero
+ARG OMERO_VERSION=5.6.5
 ARG OMEGO_ADDITIONAL_ARGS=
 ENV OMERODIR=/opt/omero/server/OMERO.server/
 RUN ansible-playbook /opt/setup/playbook.yml \
     -e omero_server_release=$OMERO_VERSION \
-    -e omero_server_omego_additional_args="$OMEGO_ADDITIONAL_ARGS"
+    -e omero_server_omego_additional_args="$OMEGO_ADDITIONAL_ARGS" \
+    && yum -y clean all \
+    && rm -fr /var/cache
 #init system
 RUN curl -L -o /usr/local/bin/dumb-init \
     https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 && \
