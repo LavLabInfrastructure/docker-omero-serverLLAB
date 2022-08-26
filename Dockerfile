@@ -58,7 +58,7 @@ RUN $VENV_SERVER/bin/pip install \
     omero-cli-render \
     omero-metadata \ 
     histoqcxomero \
-    importlib-resources
+    tables
 
 #download omero
 RUN curl -L -o OMERO.server.zip https://downloads.openmicroscopy.org/omero/5.6/server-ice36.zip 
