@@ -23,7 +23,6 @@ DBPORT="${CONFIG_omero_db_port:-5432}"
 ROOTPASS="${ROOTPASS:-omero}"
 
 export PGPASSWORD="$DBPASS"
-
 i=0
 while ! psql -h "$DBHOST" -p "$DBPORT" -U "$DBUSER" "$DBNAME" >/dev/null 2>&1 < /dev/null; do
     i=$(($i+1))
@@ -42,5 +41,5 @@ psql -w -h "$DBHOST" -p "$DBPORT" -U "$DBUSER" "$DBNAME" -c \
     $omego db upgrade --serverdir=OMERO.server
 } || {
     echo "Initialising database"
-    $omego db init --rootpass "$ROOTPASS" --serverdir=OMERO.server
+    $omego db init --rootpass=$ROOTPASS --serverdir=OMERO.server
 }

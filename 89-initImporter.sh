@@ -8,5 +8,5 @@ initImporter() {
     omero logout
     touch /OMERO/init.byte
 }
-omero login --sudo root -u root -w "${ROOTPASS:? "define ROOTPASS"}" -s localhost -p 4064 --retry 120 && \
+omero login -u root -w "${ROOTPASS:? "define ROOTPASS"}" -s 0.0.0.0 -p 4064 --retry 120 && \
 initImporter &
