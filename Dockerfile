@@ -1,5 +1,5 @@
 # OMERO.server on Ubuntu 20 w/ python3.8
-FROM ubuntu:focal
+FROM amd64/ubuntu:focal
 
 ENV VENV_SERVER=/opt/omero/server/venv3
 ENV PROMETHEUS_SERVER=/opt/prometheus-monitor
@@ -90,16 +90,11 @@ RUN ln -s /opt/omero/server/OMERO.server-*/ /opt/omero/server/OMERO.server && \
     chown -R omero-server /opt/omero/server && \
     chown -R omero-server "${OMERO_DATA_DIR}"
 
-# install prometheus tools
-RUN python3.8 -mvenv ${PROMETHEUS_SERVER} && \
-    ${PROMETHEUS_SERVER}/bin/python3.8 -m pip install wheel && \
-    ${PROMETHEUS_SERVER}/bin/python3.8 -m pip install omero-prometheus-tools
-
 # add server scripts
 USER omero-server
 RUN omero certificates 
 ADD entrypoint.sh /usr/local/bin/
-ADD 50-config.py 60-database.sh 89-initImporter.sh 98-startPrometheus.sh 99-run.sh /startup/
+ADD 50-config.py 60-database.sh 89-initImporter.sh 99-run.sh /startup/
 
 # entry
 WORKDIR /
