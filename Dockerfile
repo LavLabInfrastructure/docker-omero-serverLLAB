@@ -21,6 +21,7 @@ RUN apt install -yq unzip \
     python3.8-venv \
     python3-pip \
     python3-wheel \
+    gnupg \
     postgresql 
 
 # init system
@@ -80,7 +81,7 @@ RUN $VENV_SERVER/bin/python3.8 -m pip install \
     tables
 
 # download omero
-RUN curl -L -o OMERO.server.zip https://downloads.openmicroscopy.org/omero/5.6/server-ice36.zip 
+RUN curl -L -o OMERO.server.zip https://downloads.openmicroscopy.org/omero/latest/server-ice36.zip 
 RUN unzip -q OMERO.server.zip && \
     mv OMERO.server-* /opt/omero/server 
 
