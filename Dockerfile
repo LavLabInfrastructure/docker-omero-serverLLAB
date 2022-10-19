@@ -7,12 +7,12 @@ ENV ICE_HOME=/opt/ice-3.6.5
 ENV SLICEPATH="$ICE_HOME/slice"
 ENV OMERODIR=/opt/omero/server/OMERO.server
 ENV OMERO_DATA_DIR=/OMERO
+ENV DEBIAN_FRONTEND=noninteractive
 
 # prepare apt
 USER root
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
-    apt update -y && apt upgrade -y && \
-    apt install -y dialog apt-utils software-properties-common
+RUN apt update -y && apt upgrade -y && \
+    apt install -y apt-utils software-properties-common
 
 # install base packages
 RUN apt install -yq unzip \
@@ -22,7 +22,7 @@ RUN apt install -yq unzip \
     python3-pip \
     python3-wheel \
     gnupg \
-    postgresql 
+    postgresql-client
 
 # init system
 RUN curl -L -o /usr/local/bin/dumb-init \
@@ -95,7 +95,7 @@ RUN ln -s /opt/omero/server/OMERO.server-*/ /opt/omero/server/OMERO.server && \
 USER omero-server
 RUN omero certificates 
 ADD entrypoint.sh /usr/local/bin/
-ADD 50-config.py 60-database.sh 89-initImporter.sh 99-run.sh /startup/
+ADD startup/ /startup/
 
 # entry
 WORKDIR /
