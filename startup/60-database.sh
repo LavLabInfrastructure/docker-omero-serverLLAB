@@ -10,18 +10,20 @@ omego=/opt/omero/server/venv3/bin/omego
 cd /opt/omero/server
 
 CONFIG_omero_db_host=${CONFIG_omero_db_host:-}
+echo "host:" $CONFIG_omero_db_host
 if [ -n "$CONFIG_omero_db_host" ]; then
     DBHOST="$CONFIG_omero_db_host"
 else
     DBHOST=db
     $omero config set omero.db.host "$DBHOST"
 fi
+echo "host:" $DBHOST
 DBUSER="${CONFIG_omero_db_user:-omero}"
 DBNAME="${CONFIG_omero_db_name:-omero}"
 DBPASS="${CONFIG_omero_db_pass:-omero}"
 DBPORT="${CONFIG_omero_db_port:-5432}"
 ROOTPASS="${ROOTPASS:-omero}"
-
+echo "DB:" $DBUSER $DBNAME $DBPASS $DBHOST $ROOTPASS
 export PGPASSWORD="$DBPASS"
 i=0
 while ! psql -h "$DBHOST" -p "$DBPORT" -U "$DBUSER" "$DBNAME" >/dev/null 2>&1 < /dev/null; do

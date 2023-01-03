@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!//opt/omero/server/venv3/bin/python
 # 1. Run .omero files from /opt/omero/server/config/
 # 2. Set omero config properties from CONFIG_ envvars
 #    Variable names should replace "." with "_" and "_" with "__"

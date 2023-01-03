@@ -1,13 +1,16 @@
 # OMERO.server on Ubuntu 20 w/ python3.8
 FROM amd64/ubuntu:focal
 
+ENV OMERO_DATA_DIR=/OMERO
 ENV VENV_SERVER=/opt/omero/server/venv3
-ENV PROMETHEUS_SERVER=/opt/prometheus-monitor
+ENV OMERODIR=/opt/omero/server/OMERO.server
+
 ENV ICE_HOME=/opt/ice-3.6.5
 ENV SLICEPATH="$ICE_HOME/slice"
-ENV OMERODIR=/opt/omero/server/OMERO.server
-ENV OMERO_DATA_DIR=/OMERO
 ENV DEBIAN_FRONTEND=noninteractive
+
+ENV GRAPHITE_TO_PROMETHEUS=false
+ENV PROMETHEUS_SERVER=/opt/prometheus-monitor
 
 # prepare apt
 USER root
@@ -17,11 +20,11 @@ RUN apt update -y && apt upgrade -y && \
 # install base packages
 RUN apt install -yq unzip \
     curl \
+    gnupg \
     python3.8 \
-    python3.8-venv \
     python3-pip \
     python3-wheel \
-    gnupg \
+    python3.8-venv \
     postgresql-client
 
 # init system
@@ -69,34 +72,24 @@ RUN $VENV_SERVER/bin/python3.8 -m pip install https://github.com/ome/zeroc-ice-u
 # install omero-py and omego
 RUN $VENV_SERVER/bin/python3.8 -m pip install omero-py omego
 
-# OMERO.py plugins
-RUN $VENV_SERVER/bin/python3.8 -m pip install \
-    omero-cli-render \
-    omero-cli-duplicate \
-    omero-metadata \ 
-    omero-upload \
-    omero-dropbox \
-    omero-rois \
-    histoqcxomero \
-    tables
-
 # download omero
 RUN curl -L -o OMERO.server.zip https://downloads.openmicroscopy.org/omero/latest/server-ice36.zip 
 RUN unzip -q OMERO.server.zip && \
     mv OMERO.server-* /opt/omero/server 
 
-# transfer ownership
-RUN ln -s /opt/omero/server/OMERO.server-*/ /opt/omero/server/OMERO.server && \
+# rename server
+RUN mv /opt/omero/server/OMERO.server-*/ /opt/omero/server/OMERO.server && \
     ln -s /opt/omero/server/venv3/bin /opt/omero/server/OMERO.server/bin && \
-    chown -R omero-server /opt/omero/server && \
-    chown -R omero-server "${OMERO_DATA_DIR}"
+    chown -R omero-server /opt/omero/ /OMERO
 
 # add server scripts
 USER omero-server
 RUN omero certificates 
-ADD entrypoint.sh /usr/local/bin/
 ADD startup/ /startup/
+COPY configs/* /tmp/
+COPY --from=prom/graphite-exporter /bin/graphite_exporter /bin/graphite_exporter
 
 # entry
 WORKDIR /
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# USER root
+ENTRYPOINT ["/startup/entrypoint.sh"]
