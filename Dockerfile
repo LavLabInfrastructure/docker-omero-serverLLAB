@@ -53,7 +53,8 @@ RUN apt install -yq build-essential \
     libssl-dev \
     mcpp \
     zlib1g-dev \ 
-    openssl
+    openssl 
+
 RUN curl -L -o /tmp/ice.tar.gz https://github.com/ome/zeroc-ice-ubuntu2004/releases/download/0.2.0/ice-3.6.5-0.2.0-ubuntu2004-amd64.tar.gz 
 RUN tar -xf ice.tar.gz && \
     mv ice-3.6.5-0.2.0 /opt/ice-3.6.5 && \
@@ -71,6 +72,18 @@ RUN $VENV_SERVER/bin/python3.8 -m pip install https://github.com/ome/zeroc-ice-u
 
 # install omero-py and omego
 RUN $VENV_SERVER/bin/python3.8 -m pip install omero-py omego
+
+
+# OMERO.py plugins
+RUN $VENV_SERVER/bin/python3.8 -m pip install \
+    omero-cli-render \
+    omero-cli-duplicate \
+    omero-metadata \ 
+    omero-upload \
+    omero-dropbox \
+    omero-rois \
+    histoqcxomero \
+    tables
 
 # download omero
 RUN curl -L -o OMERO.server.zip https://downloads.openmicroscopy.org/omero/latest/server-ice36.zip 
