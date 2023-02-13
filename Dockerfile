@@ -97,7 +97,6 @@ RUN mv /opt/omero/server/OMERO.server-*/ /opt/omero/server/OMERO.server && \
 
 # add server scripts
 USER omero-server
-RUN omero certificates 
 ADD startup/ /startup/
 COPY configs/* /tmp/
 COPY --from=prom/graphite-exporter /bin/graphite_exporter /bin/graphite_exporter
